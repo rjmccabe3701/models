@@ -120,7 +120,7 @@ def resize_images(images, new_width, new_height):
                             dtype=np.float32)
 
   for i in range(images.shape[0]):
-    resized_images[i, :, :] = imresize(images[i, :, :],
+    resized_images[i, :, :] = imresize(images[i, :, :].astype(np.float32),
                                        [new_width, new_height],
                                        interp='bilinear',
                                        mode=None)

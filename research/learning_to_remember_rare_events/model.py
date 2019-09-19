@@ -44,6 +44,7 @@ class LeNet(object):
   """Standard CNN architecture."""
 
   def __init__(self, image_size, num_channels, hidden_dim):
+      #num_channels = 1
     self.image_size = image_size
     self.num_channels = num_channels
     self.hidden_dim = hidden_dim
@@ -83,6 +84,7 @@ class LeNet(object):
                                     initializer=self.vector_init)
 
     # fully connected
+    # (28/4)^2*128 X 128 = 6272 X 128
     fc1_weights = tf.get_variable(
         'fc1_w', [self.image_size // 4 * self.image_size // 4 * ch2,
                   self.hidden_dim], initializer=self.matrix_init)
@@ -114,7 +116,10 @@ class LeNet(object):
     pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1],
                            strides=[1, 2, 2, 1], padding='SAME')
 
+    #shape = BS X 6272
     reshape = tf.reshape(pool2, [batch_size, -1])
+    # (BS X 6272) * (6272 X 128)
+    # ouput dim = BS X 128
     hidden = tf.matmul(reshape, fc1_weights) + fc1_biases
 
     return hidden
@@ -125,12 +130,17 @@ class Model(object):
 
   def __init__(self, input_dim, output_dim, rep_dim, memory_size, vocab_size,
                learning_rate=0.0001, use_lsh=False):
+    #Vocab size = episode_with (5) * batch_size(16) = 80
+    #input_dim = 784
+    #output_dim = 5
+    #rep_dim = 128 (dimension of keys)
     self.input_dim = input_dim
     self.output_dim = output_dim
     self.rep_dim = rep_dim
     self.memory_size = memory_size
     self.vocab_size = vocab_size
     self.learning_rate = learning_rate
+    #use_lsh = False
     self.use_lsh = use_lsh
 
     self.embedder = self.get_embedder()
@@ -216,6 +226,7 @@ class Model(object):
 
     outputs = [self.loss, self.gradient_ops]
 
+    #Not sure why we want to clear memory between steps ...
     if clear_memory:
       self.clear_memory(sess)
 

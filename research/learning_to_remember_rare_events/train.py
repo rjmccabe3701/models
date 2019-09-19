@@ -79,6 +79,10 @@ class Trainer(object):
     # vocab size is the number of distinct values that
     # could go into the memory key-value storage
     vocab_size = self.episode_width * self.batch_size
+    #vocab_size = 80
+    #input_dim = 784
+    #output_dim = 5
+    #rep_dim = 128 (dimension of keys)
     return model.Model(
         self.input_dim, self.output_dim, self.rep_dim, self.memory_size,
         vocab_size, use_lsh=self.use_lsh)
@@ -171,6 +175,10 @@ class Trainer(object):
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
+    writer = tf.summary.FileWriter("/var/tmp/tb_logs/one_shot", graph=sess.graph, session=sess)
+    writer.close()
+
+
     saver = tf.train.Saver(max_to_keep=10)
     ckpt = None
     if FLAGS.save_dir:
@@ -213,6 +221,10 @@ class Trainer(object):
           for yy, yy_preds in zip(y, y_preds):
             # loop over batch examples
             yyy, yyy_preds = int(yy[0]), int(yy_preds[0])
+            #yyy % episode_width ==> "label"
+            #This count is the number of times this label was seen
+            # in this episode (so far) WTF
+            #All labels are gonna be seen 6 times per episode
             count = seen_counts[yyy % episode_width]
             if count in correct_by_shot:
               correct_by_shot[count].append(

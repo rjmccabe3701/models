@@ -53,3 +53,47 @@ At step 4000 you may see something like this:
 
 Maintained by Ofir Nachum (ofirnachum) and
 Lukasz Kaiser (lukaszkaiser).
+
+
+My notes
+```python
+G = sess.graph
+G.get_operations()
+#Can't do this, cuz depends on placeholders ...
+sess.run(G.get_operation_by_name('core/add'))
+#Works but doesn't print anything ...
+sess.run(G.get_operation_by_name('core/add'), feed_dict={self.x: xx, self.y: yy})
+#Works!
+sess.run(G.get_tensor_by_name('core/add:0'), feed_dict={self.x: xx, self.y: yy})
+
+#Node the ":0" this is the edge of the operation yielding the tensor (see tensorboard)
+G.get_tensor_by_name('core/conv1_w:0')
+
+#Can run this -- apparently tensors have memory?
+sess.run(G.get_tensor_by_name('core/conv1_w:0'))
+
+#Can't do this (needs a feed dictionary)
+sess.run(G.get_tensor_by_name('core/add:0'))
+
+# Looks like if a tensor is downstream from a placeholder you cannot evaluate it
+
+#Two ways to print out a tensor
+#Update: this isn't true, a variable is a wrapper around a tensor that saves state:
+#  https://stackoverflow.com/questions/44167134/whats-the-difference-between-tensor-and-variable-in-tensorflow/44167844
+sess.run(self.memory.mem_keys)
+print(sess.run(G.get_tensor_by_name('memkeys/read:0')))
+
+
+(Pdb) type(self.loss)
+<class 'tensorflow.python.framework.ops.Tensor'>
+(Pdb) type(G.get_operation_by_name('core/add')))
+*** SyntaxError: invalid syntax (<stdin>, line 1)
+(Pdb) type(G.get_operation_by_name('core/add'))
+<class 'tensorflow.python.framework.ops.Operation'>
+
+
+
+#Looks like this updates
+np.unique(sess.run(self.memory.mem_vals))
+```
+
