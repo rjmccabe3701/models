@@ -32,6 +32,7 @@ import tensorflow as tf
 import data_utils
 import model
 
+DO_CLEAR_MEMORY=False
 FLAGS = tf.flags.FLAGS
 
 tf.flags.DEFINE_integer('rep_dim', 128,
@@ -191,10 +192,12 @@ class Trainer(object):
     losses = []
     random.seed(FLAGS.seed)
     np.random.seed(FLAGS.seed)
+
+    #100000 times
     for i in xrange(FLAGS.num_episodes):
       x, y = self.sample_episode_batch(
           train_data, episode_length, episode_width, batch_size)
-      outputs = self.model.episode_step(sess, x, y, clear_memory=True)
+      outputs = self.model.episode_step(sess, x, y, clear_memory=DO_CLEAR_MEMORY)
       loss = outputs
       losses.append(loss)
 
@@ -211,7 +214,7 @@ class Trainer(object):
           x, y = self.sample_episode_batch(
               valid_data, episode_length, episode_width, 1)
           outputs = self.model.episode_predict(
-              sess, x, y, clear_memory=True)
+              sess, x, y, clear_memory=DO_CLEAR_MEMORY)
           y_preds = outputs
           correct.append(self.compute_correct(np.array(y), y_preds))
 

@@ -304,8 +304,9 @@ class Model(object):
       y_pred = out[0]
       y_preds.append(y_pred)
 
-    # Restoring memory state
-    self.memory.set(*cur_memory)
+    if clear_memory:
+        # Restoring memory state
+        self.memory.set(*cur_memory)
 
     return y_preds
 
