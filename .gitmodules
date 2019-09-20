@@ -1,3 +1,6 @@
 [submodule "tensorflow"]
 	path = research/syntaxnet/tensorflow
 	url = https://github.com/tensorflow/tensorflow.git
+[submodule "my_stuff/reservoir_time_series_class"]
+	path = my_stuff/reservoir_time_series_class
+	url = https://github.com/FilippoMB/Reservoir-Computing-framework-for-multivariate-time-series-classification.git
